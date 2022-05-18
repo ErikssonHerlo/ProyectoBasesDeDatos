@@ -5,10 +5,11 @@
 
 DROP DATABASE IF EXISTS "horizontegt";
 CREATE DATABASE "horizontegt";
+
 -- -----------------------------------------------------
 -- Schema HorizonteGT
 -- -----------------------------------------------------
-DROP Schema IF EXISTS "HorizonteGT" CASCADE;
+DROP SCHEMA IF EXISTS "HorizonteGT" CASCADE;
 
 -- -----------------------------------------------------
 -- TABLE HorizonteGT
@@ -479,7 +480,6 @@ CREATE TABLE  "HorizonteGT"."personal_aeropuerto" (
   "pasaporte" VARCHAR(50) NOT NULL,
   "puesto" VARCHAR(45) NULL,
   "sueldo_base" DECIMAL(10,2) NULL,
-  "personal_aeropuertocol" VARCHAR(45) NULL,
   "tipo_empleado" VARCHAR(45) NOT NULL,
   "anios_experiencia" INT NULL,
   "horario_entrada" TIME NULL,

@@ -13,3 +13,9 @@ WHERE
 CREATE DATABASE "horizontegt";
 
 SELECT * FROM "HorizonteGT".
+
+
+\i DDL_PSQL.sql
+\i DDL_Prueba.sql
+
+psql -U postgres -d postgres -h localhost
