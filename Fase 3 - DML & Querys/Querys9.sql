@@ -10,6 +10,14 @@ INNER JOIN horizontegt.estado_vuelo E ON V.estado_vuelo_id_estado_vuelo = E.id_e
 GROUP BY A.modelo ORDER BY Cantidad_Vuelos DESC LIMIT 5;
 -------------------------------------------------
 
+-------------------------------------------------
+SELECT A.modelo, COUNT(V.avion_codigo_avion) AS Cantidad_Vuelos, Min(V.fecha) AS Primer_Vuelo, Max(V.fecha) AS Ultimo_Vuelo FROM horizontegt.vuelo V 
+INNER JOIN horizontegt.avion A ON V.avion_codigo_avion = A.codigo_avion
+INNER JOIN horizontegt.estado_vuelo E ON E.vuelo_id_vuelo = V.id_vuelo AND E.estado_vuelo = 'Completado'
+GROUP BY A.modelo ORDER BY Cantidad_Vuelos DESC LIMIT 5;
+-------------------------------------------------
+
+
 SELECT V.id_vuelo, V.fecha, V.avion_codigo_avion, E.id_estado_vuelo FROM horizontegt.vuelo V
 INNER JOIN horizontegt.estado_vuelo E ON V.estado_vuelo_id_estado_vuelo = E.id_estado_vuelo AND E.estado_vuelo = 'Aterrizo';
 
