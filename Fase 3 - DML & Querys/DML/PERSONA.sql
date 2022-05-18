@@ -98,3 +98,4 @@ insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento
 insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6560642135', 'Emmaline', 'Crevy', '1999-08-20', 22, 'Female', '986-757-1679', '130-928-4438', 'ecrevy2p@t.co');
 insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5810441610', 'Melody', 'McGaffey', '2014-06-09', 7, 'Female', '971-711-9280', '680-948-0493', 'mmcgaffey2q@jugem.jp');
 insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5132194923', 'Caitlin', 'Chimenti', '2005-01-10', 17, 'Female', '729-982-2368', '356-920-0158', 'cchimenti2r@eepurl.com');
+

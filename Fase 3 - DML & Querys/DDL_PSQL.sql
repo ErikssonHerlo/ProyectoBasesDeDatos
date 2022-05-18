@@ -197,8 +197,8 @@ CREATE TABLE  "HorizonteGT"."vuelo" (
   "avion_codigo_avion" VARCHAR(30) NOT NULL,
   "puerta_abordaje" VARCHAR(45) NULL,
   "puerta_desembarque" VARCHAR(45) NULL,
-  "hora_despegue" DATE NULL,
-  "hora_aterrizaje" DATE NULL,
+  "hora_despegue" TIME NULL,
+  "hora_aterrizaje" TIME NULL,
   "estado_vuelo_id_estado_vuelo" INT NOT NULL,
   PRIMARY KEY ("id_vuelo"),
   CONSTRAINT "fk_vuelo_plan_vuelo1"
