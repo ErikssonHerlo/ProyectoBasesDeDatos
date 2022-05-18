@@ -3,1057 +3,506 @@
 \d "horizontegt";
 
 
--- -----------------------------------------------------
--- Table "HorizonteGT"."documento_identificacion"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."documento_identificacion" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "DNI" VARCHAR(45) NULL,
-  "VISA" VARCHAR(45) NULL,
-  "pasaporte_alternativo" VARCHAR(45) NULL,
-  "licencia_conducir" VARCHAR(45) NULL,
-  PRIMARY KEY ("pasaporte"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."persona"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."persona" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "nombres" VARCHAR(50) NOT NULL,
-  "apellidos" VARCHAR(70) NOT NULL,
-  "fecha_nacimiento" DATE NOT NULL,
-  "edad" INT NOT NULL,
-  "genero" VARCHAR(30) NOT NULL,
-  "telefono" VARCHAR(30) NOT NULL,
-  "telefono_2" VARCHAR(30) NOT NULL,
-  "email" VARCHAR(45) NOT NULL,
-
-
-
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."pasajero"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."pasajero" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "edad" INT NOT NULL,
-  "es_nino" BOOLEAN NULL,
-  PRIMARY KEY ("pasaporte"),
-  CONSTRAINT "fk_pasajero_persona1"
-    FOREIGN KEY ("pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."tipo_avion"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."tipo_avion" (
-  "tipo_avion" VARCHAR(50) NOT NULL,
-  "descripcion" TEXT NULL,
-  "capacidad" INT NULL,
-  PRIMARY KEY ("tipo_avion"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."estado_avion"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."estado_avion" (
-  "estado" VARCHAR(45) NOT NULL,
-  "descripcion" TEXT NULL,
-  PRIMARY KEY ("estado"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."avion"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."avion" (
-  "codigo_avion" VARCHAR(30) NOT NULL,
-  "modelo" VARCHAR(45) NULL,
-  "tipo_avion_tipo_avion" VARCHAR(50) NOT NULL,
-  "fecha_adquisicion" DATE NULL,
-  "fecha_mantenimiento" DATE NULL,
-  "estado_avion_estado" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("codigo_avion"),
-  CONSTRAINT "fk_avion_tipo_avion1"
-    FOREIGN KEY ("tipo_avion_tipo_avion")
-    REFERENCES "HorizonteGT"."tipo_avion" ("tipo_avion")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_avion_estado_avion1"
-    FOREIGN KEY ("estado_avion_estado")
-    REFERENCES "HorizonteGT"."estado_avion" ("estado")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."clase"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."clase" (
-  "nombre_clase" VARCHAR(45) NOT NULL,
-  "acronimo" VARCHAR(10) NULL,
-  "descripcion" TEXT NULL,
-  "ubicacion" VARCHAR(45) NULL,
-  "cant_tarifas_cambio" INT NULL,
-  "cant_maleta_documentadas" INT NULL,
-  "cant_maleta_mano" INT NULL,
-  "eleccion_asiento" BOOLEAN NULL,
-  PRIMARY KEY ("nombre_clase"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."asiento"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."asiento" (
-  "numero_fila" INT NOT NULL,
-  "letra_columna" CHAR(2) NOT NULL,
-  "avion_codigo_avion" VARCHAR(30) NOT NULL,
-  "clase_nombre_clase" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("numero_fila", "letra_columna", "avion_codigo_avion", "clase_nombre_clase"),
-  CONSTRAINT "fk_asiento_avion1"
-    FOREIGN KEY ("avion_codigo_avion")
-    REFERENCES "HorizonteGT"."avion" ("codigo_avion")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_asiento_clase1"
-    FOREIGN KEY ("clase_nombre_clase")
-    REFERENCES "HorizonteGT"."clase" ("nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."dias_plan_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."dias_plan_vuelo" (
-  "id_dias_plan_vuelo" SERIAL NOT NULL,
-  "dias_plan" TEXT [] NOT NULL,
-  PRIMARY KEY ("id_dias_plan_vuelo"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."plan_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."plan_vuelo" (
-  "id_plan_vuelo" SERIAL NOT NULL,
-  "dias_plan_vuelo_id_dias_plan_vuelo" INT NOT NULL,
-  "distancia" DECIMAL(10,2) NULL,
-  "tipo_avion_tipo_avion" VARCHAR(50) NOT NULL,
-  "es_temporal" BOOLEAN NULL,
-  "fecha_inicio" DATE NULL,
-  "fecha_final" DATE NULL,
-  "estado" VARCHAR(45) NULL,
-  PRIMARY KEY ("id_plan_vuelo"),
-  CONSTRAINT "fk_plan_vuelo_dias_plan_vuelo1"
-    FOREIGN KEY ("dias_plan_vuelo_id_dias_plan_vuelo")
-    REFERENCES "HorizonteGT"."dias_plan_vuelo" ("id_dias_plan_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_plan_vuelo_tipo_avion1"
-    FOREIGN KEY ("tipo_avion_tipo_avion")
-    REFERENCES "HorizonteGT"."tipo_avion" ("tipo_avion")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."estado_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."estado_vuelo" (
-  "id_estado_vuelo" INT NOT NULL,
-  "estado_vuelo" VARCHAR(45) NULL,
-  "descripcion" TEXT NULL,
-  "fecha" DATE NULL,
-  "hora" TIME NULL,
-  PRIMARY KEY ("id_estado_vuelo"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."vuelo" (
-  "id_vuelo" BIGINT NOT NULL,
-  "fecha" DATE NULL,
-  "distancia" DECIMAL(10,2) NULL,
-  "plan_vuelo_id_plan_vuelo" BIGINT NOT NULL,
-  "avion_codigo_avion" VARCHAR(30) NOT NULL,
-  "puerta_abordaje" VARCHAR(45) NULL,
-  "puerta_desembarque" VARCHAR(45) NULL,
-  "hora_despegue" DATE NULL,
-  "hora_aterrizaje" DATE NULL,
-  "estado_vuelo_id_estado_vuelo" INT NOT NULL,
-  PRIMARY KEY ("id_vuelo"),
-  CONSTRAINT "fk_vuelo_plan_vuelo1"
-    FOREIGN KEY ("plan_vuelo_id_plan_vuelo")
-    REFERENCES "HorizonteGT"."plan_vuelo" ("id_plan_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_vuelo_avion1"
-    FOREIGN KEY ("avion_codigo_avion")
-    REFERENCES "HorizonteGT"."avion" ("codigo_avion")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_vuelo_estado_vuelo1"
-    FOREIGN KEY ("estado_vuelo_id_estado_vuelo")
-    REFERENCES "HorizonteGT"."estado_vuelo" ("id_estado_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."boleto"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."boleto" (
-  "idboleto" SERIAL NOT NULL,
-  "asiento_numero_fila" INT NOT NULL,
-  "asiento_letra_columna" CHAR(2) NOT NULL,
-  "asiento_avion_codigo_avion" VARCHAR(30) NOT NULL,
-  "asiento_clase_nombre_clase" VARCHAR(45) NOT NULL,
-  "pasajero_pasaporte" VARCHAR(50) NULL,
-  "vuelo_id_vuelo" BIGINT NOT NULL,
-  "estado" VARCHAR(45) NULL,
-  PRIMARY KEY ("idboleto"),
-  CONSTRAINT "fk_boleto_asiento1"
-    FOREIGN KEY ("asiento_numero_fila" , "asiento_letra_columna" , "asiento_avion_codigo_avion" , "asiento_clase_nombre_clase")
-    REFERENCES "HorizonteGT"."asiento" ("numero_fila" , "letra_columna" , "avion_codigo_avion" , "clase_nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_boleto_pasajero1"
-    FOREIGN KEY ("pasajero_pasaporte")
-    REFERENCES "HorizonteGT"."pasajero" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_boleto_vuelo1"
-    FOREIGN KEY ("vuelo_id_vuelo")
-    REFERENCES "HorizonteGT"."vuelo" ("id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."aeropuerto"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."aeropuerto" (
-  "id_aeropuerto" BIGINT NOT NULL,
-  "nombre" VARCHAR(100) NULL,
-  "direccion" VARCHAR(100) NULL,
-  "ciudad" VARCHAR(45) NULL,
-  "pais" VARCHAR(45) NULL,
-  "continente" VARCHAR(30) NULL,
-  PRIMARY KEY ("id_aeropuerto"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."salida_plan_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."salida_plan_vuelo" (
-  "id_salida_plan_vuelo" INT NOT NULL,
-  "puerta_abordaje" VARCHAR(45) NULL,
-  "hora_abordaje" TIME NULL,
-  "hora_salida" TIME NULL,
-  "salida_plan_vuelocol" VARCHAR(45) NULL,
-  "aeropuerto_id_aeropuerto" BIGINT NOT NULL,
-  "plan_vuelo_id_plan_vuelo" BIGINT NOT NULL,
-  PRIMARY KEY ("id_salida_plan_vuelo"),
-  CONSTRAINT "fk_salida_plan_vuelo_aeropuerto1"
-    FOREIGN KEY ("aeropuerto_id_aeropuerto")
-    REFERENCES "HorizonteGT"."aeropuerto" ("id_aeropuerto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_salida_plan_vuelo_plan_vuelo1"
-    FOREIGN KEY ("plan_vuelo_id_plan_vuelo")
-    REFERENCES "HorizonteGT"."plan_vuelo" ("id_plan_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."llegada_plan_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."llegada_plan_vuelo" (
-  "id_llegada_plan_vuelo" INT NOT NULL,
-  "puerta_desembarque" VARCHAR(45) NULL,
-  "hora_llegada" TIME NULL,
-  "aeropuerto_id_aeropuerto" BIGINT NOT NULL,
-  "plan_vuelo_id_plan_vuelo" BIGINT NOT NULL,
-  PRIMARY KEY ("id_llegada_plan_vuelo"),
-  CONSTRAINT "fk_llegada_plan_vuelo_aeropuerto1"
-    FOREIGN KEY ("aeropuerto_id_aeropuerto")
-    REFERENCES "HorizonteGT"."aeropuerto" ("id_aeropuerto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_llegada_plan_vuelo_plan_vuelo1"
-    FOREIGN KEY ("plan_vuelo_id_plan_vuelo")
-    REFERENCES "HorizonteGT"."plan_vuelo" ("id_plan_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."distribucion_asiento"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."distribucion_asiento" (
-  "id_distribucion_asiento" SERIAL NOT NULL,
-  "cantidad_filas" INT NULL,
-  "cantidad_columnas" INT NULL,
-  "cantidad_tripulantes" INT NULL,
-  "avion_codigo_avion" VARCHAR(30) NOT NULL,
-  "clase_nombre_clase" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("id_distribucion_asiento"),
-  CONSTRAINT "fk_distribucion_asiento_avion1"
-    FOREIGN KEY ("avion_codigo_avion")
-    REFERENCES "HorizonteGT"."avion" ("codigo_avion")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_distribucion_asiento_clase1"
-    FOREIGN KEY ("clase_nombre_clase")
-    REFERENCES "HorizonteGT"."clase" ("nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."beneficios_extra"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."beneficios_extra" (
-  "id_beneficios_extra" SERIAL NOT NULL,
-  "beneficio" VARCHAR(45) NULL,
-  "descripcion" TEXT NULL,
-  "clase_nombre_clase" VARCHAR(45) NOT NULL,
-  "vuelo_id_vuelo" BIGINT NOT NULL,
-  PRIMARY KEY ("id_beneficios_extra"),
-  CONSTRAINT "fk_beneficios_extra_clase1"
-    FOREIGN KEY ("clase_nombre_clase")
-    REFERENCES "HorizonteGT"."clase" ("nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_beneficios_extra_vuelo1"
-    FOREIGN KEY ("vuelo_id_vuelo")
-    REFERENCES "HorizonteGT"."vuelo" ("id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."nacionalidad"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."nacionalidad" (
-  "id_nacionalidad" SERIAL NOT NULL,
-  "nacionalidades" TEXT [] NULL,
-  "persona_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("id_nacionalidad"),
-  CONSTRAINT "fk_nacionalidad_persona1"
-    FOREIGN KEY ("persona_pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."maleta_documentada"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."maleta_documentada" (
-  "id_maleta_documentada" INT NOT NULL,
-  "peso" DECIMAL(10,2) NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "es_gratis" BOOLEAN NULL,
-  "descripcion" TEXT NULL,
-  "boleto_idboleto" BIGINT NOT NULL,
-  PRIMARY KEY ("id_maleta_documentada"),
-  CONSTRAINT "fk_maleta_documentada_boleto1"
-    FOREIGN KEY ("boleto_idboleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."mascota"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."mascota" (
-  "id_mascota" SERIAL NOT NULL,
-  "nombre" VARCHAR(45) NULL,
-  "peso" DECIMAL(10,2) NULL,
-  "especie" VARCHAR(45) NULL,
-  "certificado_veterinario" BOOLEAN NULL,
-  "descripcion" TEXT NULL,
-  "maleta_documentada_id_maleta_documentada" INT NULL,
-  PRIMARY KEY ("id_mascota"),
-  CONSTRAINT "fk_mascota_maleta_documentada1"
-    FOREIGN KEY ("maleta_documentada_id_maleta_documentada")
-    REFERENCES "HorizonteGT"."maleta_documentada" ("id_maleta_documentada")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."lista_vacunas"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."lista_vacunas" (
-  "id_vacuna" INT NOT NULL,
-  "mascota_id_mascota" BIGINT NOT NULL,
-  "nombre_vacuna" VARCHAR(45) NULL,
-  "fecha_vacuna" DATE NULL,
-  PRIMARY KEY ("id_vacuna", "mascota_id_mascota"),
-  CONSTRAINT "fk_lista_vacunas_mascota1"
-    FOREIGN KEY ("mascota_id_mascota")
-    REFERENCES "HorizonteGT"."mascota" ("id_mascota")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."asignacion_mascota"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."asignacion_mascota" (
-  "pasajero_boleto" BIGINT NOT NULL,
-  "mascota_id_mascota" BIGINT NOT NULL,
-  PRIMARY KEY ("pasajero_boleto", "mascota_id_mascota"),
-  CONSTRAINT "fk_asignacion_mascota_boleto1"
-    FOREIGN KEY ("pasajero_boleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_asignacion_mascota_mascota1"
-    FOREIGN KEY ("mascota_id_mascota")
-    REFERENCES "HorizonteGT"."mascota" ("id_mascota")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."encuesta"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."encuesta" (
-  "id_encuesta" BIGINT NOT NULL,
-  "vuelo_general" INT NULL,
-  "servicio_tripulantes" INT NULL,
-  "comida" INT NULL,
-  "observaciones" TEXT NULL,
-  "pasajero_pasaporte" VARCHAR(50) NOT NULL,
-  "vuelo_id_vuelo" BIGINT NOT NULL,
-  PRIMARY KEY ("id_encuesta"),
-  CONSTRAINT "fk_encuesta_pasajero1"
-    FOREIGN KEY ("pasajero_pasaporte")
-    REFERENCES "HorizonteGT"."pasajero" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_encuesta_vuelo1"
-    FOREIGN KEY ("vuelo_id_vuelo")
-    REFERENCES "HorizonteGT"."vuelo" ("id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."tipo_empleado"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."tipo_empleado" (
-  "tipo_empleado" VARCHAR(45) NOT NULL,
-  "descripcion" TEXT NULL,
-  PRIMARY KEY ("tipo_empleado"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."personal_aeropuerto"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."personal_aeropuerto" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "puesto" VARCHAR(45) NULL,
-  "sueldo_base" DECIMAL(10,2) NULL,
-  "personal_aeropuertocol" VARCHAR(45) NULL,
-  "tipo_empleado" VARCHAR(45) NOT NULL,
-  "anios_experiencia" INT NULL,
-  "horario_entrada" TIME NULL,
-  "horario_salida" TIME NULL,
-  "dias_enfermedad" INT NULL,
-  "dias_vacaciones" INT NULL,
-  "fecha_inicio" DATE NULL,
-  PRIMARY KEY ("pasaporte"),
-  CONSTRAINT "fk_personal_aeropuerto_persona1"
-    FOREIGN KEY ("pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_personal_aeropuerto_tipo_empleado1"
-    FOREIGN KEY ("tipo_empleado")
-    REFERENCES "HorizonteGT"."tipo_empleado" ("tipo_empleado")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."solicitudes_vacaciones"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."solicitudes_vacaciones" (
-  "no_solicitud" SERIAL NOT NULL,
-  "estado" VARCHAR(45) NULL,
-  "fecha" DATE NULL,
-  "personal_aeropuerto_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("no_solicitud"),
-  CONSTRAINT "fk_solicitudes_vacaciones_personal_aeropuerto1"
-    FOREIGN KEY ("personal_aeropuerto_pasaporte")
-    REFERENCES "HorizonteGT"."personal_aeropuerto" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."asignacion_tripulacion"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."asignacion_tripulacion" (
-  "personal_aeropuerto_pasaporte" VARCHAR(50) NOT NULL,
-  "vuelo_id_vuelo" BIGINT NOT NULL,
-  "rol" VARCHAR(45) NULL,
-  "distancia" DECIMAL(10,2) NULL,
-  "cantidad_horas" INT NULL,
-  "fecha" DATE NULL,
-  PRIMARY KEY ("personal_aeropuerto_pasaporte", "vuelo_id_vuelo"),
-  CONSTRAINT "fk_asignacion_tripulacion_personal_aeropuerto1"
-    FOREIGN KEY ("personal_aeropuerto_pasaporte")
-    REFERENCES "HorizonteGT"."personal_aeropuerto" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_asignacion_tripulacion_vuelo1"
-    FOREIGN KEY ("vuelo_id_vuelo")
-    REFERENCES "HorizonteGT"."vuelo" ("id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."comisiones"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."comisiones" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "id_vuelo" BIGINT NOT NULL,
-  "fecha" DATE NULL,
-  "comision" DECIMAL(10,2) NULL,
-  "comision_anios" DECIMAL(10,2) NULL,
-  "subtotal" DECIMAL(10,2) NULL,
-  PRIMARY KEY ("pasaporte", "id_vuelo"),
-  CONSTRAINT "fk_comisiones_asignacion_tripulacion1"
-    FOREIGN KEY ("pasaporte" , "id_vuelo")
-    REFERENCES "HorizonteGT"."asignacion_tripulacion" ("personal_aeropuerto_pasaporte" , "vuelo_id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."precio"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."precio" (
-  "id_precio" SERIAL NOT NULL,
-  "dia" VARCHAR(15) NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "tipo_pasajero" BOOLEAN NULL,
-  "plan_vuelo_id_plan_vuelo" BIGINT NOT NULL,
-  "clase_nombre_clase" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("id_precio"),
-  CONSTRAINT "fk_precio_plan_vuelo1"
-    FOREIGN KEY ("plan_vuelo_id_plan_vuelo")
-    REFERENCES "HorizonteGT"."plan_vuelo" ("id_plan_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_precio_clase1"
-    FOREIGN KEY ("clase_nombre_clase")
-    REFERENCES "HorizonteGT"."clase" ("nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."nomina_sueldos_empleados"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."nomina_sueldos_empleados" (
-  "id_nomina_sueldos_empleados" SERIAL NOT NULL,
-  "sueldo_base" DECIMAL(10,2) NULL,
-  "comisiones" DECIMAL(10,2) NULL,
-  "total" DECIMAL(10,2) NULL,
-  "fecha_pago" DATE NULL,
-  "personal_aeropuerto_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("id_nomina_sueldos_empleados"),
-  CONSTRAINT "fk_nomina_sueldos_empleados_personal_aeropuerto1"
-    FOREIGN KEY ("personal_aeropuerto_pasaporte")
-    REFERENCES "HorizonteGT"."personal_aeropuerto" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."tipo_cuenta"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."tipo_cuenta" (
-  "nombre_cuenta" VARCHAR(45) NOT NULL,
-  "cant_anios" INT NULL,
-  "requerimiento_millas" INT NULL,
-  "millas_por_dolar" INT NULL,
-  "requerimiento_vuelos" INT NULL,
-  "req_anios_cuenta_anterior" INT NULL,
-  PRIMARY KEY ("nombre_cuenta"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."usuario"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."usuario" (
-  "pasaporte" VARCHAR(50) NOT NULL,
-  "username" VARCHAR(45) NULL,
-  "password" VARCHAR(45) NULL,
-  "millas_acumuladas" INT NULL,
-  "tipo_cuenta_nombre_cuenta" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("pasaporte"),
-  CONSTRAINT "fk_table1_persona1"
-    FOREIGN KEY ("pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_usuario_tipo_cuenta1"
-    FOREIGN KEY ("tipo_cuenta_nombre_cuenta")
-    REFERENCES "HorizonteGT"."tipo_cuenta" ("nombre_cuenta")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."cortesia"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."cortesia" (
-  "id_cortesia" SERIAL NOT NULL,
-  "cortesia" VARCHAR(45) NULL,
-  "descripcion" TEXT NULL,
-  "tipo_cuenta_nombre_cuenta" VARCHAR(45) NOT NULL,
-  "usuario_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("id_cortesia"),
-  CONSTRAINT "fk_cortesia_tipo_cuenta1"
-    FOREIGN KEY ("tipo_cuenta_nombre_cuenta")
-    REFERENCES "HorizonteGT"."tipo_cuenta" ("nombre_cuenta")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_cortesia_usuario1"
-    FOREIGN KEY ("usuario_pasaporte")
-    REFERENCES "HorizonteGT"."usuario" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."historial_cuentas_usuario"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."historial_cuentas_usuario" (
-  "id_historial_cuentas_usuario" SERIAL NOT NULL,
-  "usuario_pasaporte" VARCHAR(50) NOT NULL,
-  "username" VARCHAR(45) NULL,
-  "tipo_cuenta_nombre_cuenta" VARCHAR(45) NOT NULL,
-  "fecha_creacion" DATE NULL,
-  "fecha_cambio" DATE NULL,
-  "anios_cuenta" INT NULL,
-  PRIMARY KEY ("id_historial_cuentas_usuario"),
-  CONSTRAINT "fk_historial_cuentas_usuario_usuario1"
-    FOREIGN KEY ("usuario_pasaporte")
-    REFERENCES "HorizonteGT"."usuario" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_historial_cuentas_usuario_tipo_cuenta1"
-    FOREIGN KEY ("tipo_cuenta_nombre_cuenta")
-    REFERENCES "HorizonteGT"."tipo_cuenta" ("nombre_cuenta")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."estado_compra"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."estado_compra" (
-  "id_estado_compra" SERIAL NOT NULL,
-  "estado_compra" VARCHAR(45) NULL,
-  "fecha" DATE NULL,
-  "hora" TIME NULL,
-  "observaciones" TEXT NULL,
-  PRIMARY KEY ("id_estado_compra"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."compra"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."compra" (
-  "id_compra" BIGINT NOT NULL,
-  "usuario_pasaporte" VARCHAR(50) NULL,
-  "persona_pasaporte" VARCHAR(50) NULL,
-  "fecha_compra" DATE NULL,
-  "hora_compra" TIME NULL,
-  "estado_compra" INT NOT NULL,
-  "total" DECIMAL(10,2) NULL,
-  PRIMARY KEY ("id_compra"),
-  CONSTRAINT "fk_compra_usuario1"
-    FOREIGN KEY ("usuario_pasaporte")
-    REFERENCES "HorizonteGT"."usuario" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_compra_persona1"
-    FOREIGN KEY ("persona_pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_compra_estado_compra1"
-    FOREIGN KEY ("estado_compra")
-    REFERENCES "HorizonteGT"."estado_compra" ("id_estado_compra")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."aseguranza"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."aseguranza" (
-  "id_aseguranza" SERIAL NOT NULL,
-  "porcentaje" DECIMAL(10,2) NULL,
-  "cuota" DECIMAL(10,2) NULL,
-  PRIMARY KEY ("id_aseguranza"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."detalle_compra"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."detalle_compra" (
-  "id_detalle_compra" INT NOT NULL,
-  "boleto_idboleto" BIGINT NOT NULL,
-  "fecha_compra" DATE NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "total_maletas_documentadas" DECIMAL(10,2) NULL,
-  "total_aseguranza" DECIMAL(10,2) NULL,
-  "sub_total" DECIMAL(10,2) NULL,
-  "aseguranza_id_aseguranza" INT NULL,
-  "compra_id_compra" BIGINT NOT NULL,
-  PRIMARY KEY ("id_detalle_compra"),
-  CONSTRAINT "fk_detalle_compra_boleto1"
-    FOREIGN KEY ("boleto_idboleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_detalle_compra_aseguranza1"
-    FOREIGN KEY ("aseguranza_id_aseguranza")
-    REFERENCES "HorizonteGT"."aseguranza" ("id_aseguranza")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_detalle_compra_compra1"
-    FOREIGN KEY ("compra_id_compra")
-    REFERENCES "HorizonteGT"."compra" ("id_compra")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."maleta_mano"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."maleta_mano" (
-  "id_maleta_mano" SERIAL NOT NULL,
-  "peso" DECIMAL(10,2) NULL,
-  "descripcion" TEXT NULL,
-  "boleto_idboleto" BIGINT NOT NULL,
-  PRIMARY KEY ("id_maleta_mano"),
-  CONSTRAINT "fk_maleta_mano_boleto1"
-    FOREIGN KEY ("boleto_idboleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."metodo_pago"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."metodo_pago" (
-  "id_metodo_pago" SERIAL NOT NULL,
-  "numero_tarjeta" BIGINT NULL,
-  "tipo_tarjeta" VARCHAR(45) NULL,
-  "persona_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("id_metodo_pago"),
-  CONSTRAINT "fk_metodo_pago_persona1"
-    FOREIGN KEY ("persona_pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."compra_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."compra_vuelo" (
-  "id_compra_vuelo" BIGINT NOT NULL,
-  "fecha_compra" DATE NULL,
-  "hora" TIME NULL,
-  "total" DECIMAL(10,2) NULL,
-  "persona_pasaporte" VARCHAR(50) NOT NULL,
-  PRIMARY KEY ("id_compra_vuelo"),
-  CONSTRAINT "fk_compra_vuelo_persona1"
-    FOREIGN KEY ("persona_pasaporte")
-    REFERENCES "HorizonteGT"."persona" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."pago"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."pago" (
-  "id_pago" BIGINT NOT NULL,
-  "compra_id_compra" BIGINT NULL,
-  "pago_total" DECIMAL(10,2) NULL,
-  "compra_vuelo_id_compra_vuelo" BIGINT NULL,
-  PRIMARY KEY ("id_pago"),
-  CONSTRAINT "fk_pago_compra1"
-    FOREIGN KEY ("compra_id_compra")
-    REFERENCES "HorizonteGT"."compra" ("id_compra")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_pago_compra_vuelo1"
-    FOREIGN KEY ("compra_vuelo_id_compra_vuelo")
-    REFERENCES "HorizonteGT"."compra_vuelo" ("id_compra_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."detalle_pago"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."detalle_pago" (
-  "id_detalle_pago" BIGINT NOT NULL,
-  "cantidad_pago" DECIMAL(10,2) NULL,
-  "formato_pago" VARCHAR(45) NULL,
-  "pago_id_pago" BIGINT NULL,
-  "metodo_pago_id_metodo_pago" BIGINT NULL,
-  PRIMARY KEY ("id_detalle_pago"),
-  CONSTRAINT "fk_detalle_pago_pago1"
-    FOREIGN KEY ("pago_id_pago")
-    REFERENCES "HorizonteGT"."pago" ("id_pago")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_detalle_pago_metodo_pago1"
-    FOREIGN KEY ("metodo_pago_id_metodo_pago")
-    REFERENCES "HorizonteGT"."metodo_pago" ("id_metodo_pago")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."servicio"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."servicio" (
-  "id_servicio" SERIAL NOT NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "tipo_servicio" VARCHAR(45) NULL,
-  "descripcion" TEXT NULL,
-  "disponible" BOOLEAN NULL,
-  PRIMARY KEY ("id_servicio"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."genero"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."genero" (
-  "genero" VARCHAR(45) NOT NULL,
-  "descripcion" TEXT NULL,
-  PRIMARY KEY ("genero"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."pelicula"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."pelicula" (
-  "id_pelicula" BIGINT NOT NULL,
-  "nombre_pelicula" VARCHAR(100) NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "duracion" TIME NULL,
-  "clasificacion" VARCHAR(10) NULL,
-  "sinopsis" TEXT NULL,
-  PRIMARY KEY ("id_pelicula"),
-  CONSTRAINT "fk_pelicula_servicio1"
-    FOREIGN KEY ("id_pelicula")
-    REFERENCES "HorizonteGT"."servicio" ("id_servicio")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."pelicula_tiene_genero"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."pelicula_tiene_genero" (
-  "genero_genero" VARCHAR(45) NOT NULL,
-  "pelicula_id_pelicula" BIGINT NOT NULL,
-  PRIMARY KEY ("genero_genero", "pelicula_id_pelicula"),
-  CONSTRAINT "fk_table1_genero1"
-    FOREIGN KEY ("genero_genero")
-    REFERENCES "HorizonteGT"."genero" ("genero")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_pelicula_tiene_genero_pelicula1"
-    FOREIGN KEY ("pelicula_id_pelicula")
-    REFERENCES "HorizonteGT"."pelicula" ("id_pelicula")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."actor"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."actor" (
-  "id_actor" SERIAL NOT NULL,
-  "nombre_actor" VARCHAR(100) NULL,
-  "fecha_nacimiento" DATE NULL,
-  "genero" VARCHAR(45) NULL,
-  PRIMARY KEY ("id_actor"));
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."pelicula_tiene_actor"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."pelicula_tiene_actor" (
-  "actor_id_actor" BIGINT NOT NULL,
-  "pelicula_id_pelicula" BIGINT NOT NULL,
-  PRIMARY KEY ("actor_id_actor", "pelicula_id_pelicula"),
-  CONSTRAINT "fk_pelicula_tiene_actor_actor1"
-    FOREIGN KEY ("actor_id_actor")
-    REFERENCES "HorizonteGT"."actor" ("id_actor")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_pelicula_tiene_actor_pelicula1"
-    FOREIGN KEY ("pelicula_id_pelicula")
-    REFERENCES "HorizonteGT"."pelicula" ("id_pelicula")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."servicio_digital"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."servicio_digital" (
-  "id_servicio_digital" BIGINT NOT NULL,
-  "nombre_servicio" VARCHAR(45) NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "descripcion" TEXT NULL,
-  PRIMARY KEY ("id_servicio_digital"),
-  CONSTRAINT "fk_servicio_digital_servicio1"
-    FOREIGN KEY ("id_servicio_digital")
-    REFERENCES "HorizonteGT"."servicio" ("id_servicio")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."menu_comida"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."menu_comida" (
-  "id_menu_comida" BIGINT NOT NULL,
-  "nombre_comida" VARCHAR(100) NULL,
-  "ingredientes" TEXT NULL,
-  "precio" DECIMAL(10,2) NULL,
-  PRIMARY KEY ("id_menu_comida"),
-  CONSTRAINT "fk_menu_comida_servicio1"
-    FOREIGN KEY ("id_menu_comida")
-    REFERENCES "HorizonteGT"."servicio" ("id_servicio")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."menu_gratis"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."menu_gratis" (
-  "id_menu_gratis" SERIAL NOT NULL,
-  "bebida" TEXT NULL,
-  "comida" TEXT NULL,
-  "clase_nombre_clase" VARCHAR(45) NOT NULL,
-  PRIMARY KEY ("id_menu_gratis"),
-  CONSTRAINT "fk_menu_gratis_clase1"
-    FOREIGN KEY ("clase_nombre_clase")
-    REFERENCES "HorizonteGT"."clase" ("nombre_clase")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."vuelo_tiene_servicio"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."vuelo_tiene_servicio" (
-  "vuelo_id_vuelo" BIGINT NOT NULL,
-  "servicio_id_servicio" BIGINT NOT NULL,
-  "stock" INT NULL,
-  PRIMARY KEY ("vuelo_id_vuelo", "servicio_id_servicio"),
-  CONSTRAINT "fk_vuelo_tiene_servicio_vuelo1"
-    FOREIGN KEY ("vuelo_id_vuelo")
-    REFERENCES "HorizonteGT"."vuelo" ("id_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_vuelo_tiene_servicio_servicio1"
-    FOREIGN KEY ("servicio_id_servicio")
-    REFERENCES "HorizonteGT"."servicio" ("id_servicio")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."detalle_compra_vuelo"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."detalle_compra_vuelo" (
-  "id_detalle_compra_vuelo" SERIAL NOT NULL,
-  "cantidad" INT NULL,
-  "precio" DECIMAL(10,2) NULL,
-  "sub_total" DECIMAL(10,2) NULL,
-  "servicio_id_vuelo" BIGINT NOT NULL,
-  "servicio_id_servicio" BIGINT NOT NULL,
-  "id_compra_vuelo" BIGINT NOT NULL,
-  PRIMARY KEY ("id_detalle_compra_vuelo"),
-  CONSTRAINT "fk_detalle_compra_vuelo_vuelo_tiene_servicio1"
-    FOREIGN KEY ("servicio_id_vuelo" , "servicio_id_servicio")
-    REFERENCES "HorizonteGT"."vuelo_tiene_servicio" ("vuelo_id_vuelo" , "servicio_id_servicio")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_detalle_compra_vuelo_compra_vuelo1"
-    FOREIGN KEY ("id_compra_vuelo")
-    REFERENCES "HorizonteGT"."compra_vuelo" ("id_compra_vuelo")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."asignacion_nino_pasajero"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."asignacion_nino_pasajero" (
-  "nino_boleto" BIGINT NOT NULL,
-  "pasajero_boleto" BIGINT NOT NULL,
-  PRIMARY KEY ("nino_boleto", "pasajero_boleto"),
-  CONSTRAINT "fk_asignacion_nino_pasajero_boleto1"
-    FOREIGN KEY ("nino_boleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_asignacion_nino_pasajero_boleto2"
-    FOREIGN KEY ("pasajero_boleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table "HorizonteGT"."asignacion_nino_tripulante"
--- -----------------------------------------------------
-CREATE TABLE  "HorizonteGT"."asignacion_nino_tripulante" (
-  "personal_aeropuerto_pasaporte" VARCHAR(50) NOT NULL,
-  "boleto_idboleto" BIGINT NOT NULL,
-  PRIMARY KEY ("personal_aeropuerto_pasaporte", "boleto_idboleto"),
-  CONSTRAINT "fk_asignacion_nino_tripulante_personal_aeropuerto1"
-    FOREIGN KEY ("personal_aeropuerto_pasaporte")
-    REFERENCES "HorizonteGT"."personal_aeropuerto" ("pasaporte")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_asignacion_nino_tripulante_boleto1"
-    FOREIGN KEY ("boleto_idboleto")
-    REFERENCES "HorizonteGT"."boleto" ("idboleto")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
+insert into horizontegt.documento_identificacion (pasaporte) values ('2062614284');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6797168856');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2797961471');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2400098816');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2844098088');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1219112097');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6775847696');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3575874239');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0420897194');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8355741048');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1932404651');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2123166561');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4060254886');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0593629558');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3251041789');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8167213927');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2627550470');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2562727894');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1651693390');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5471426789');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1058410172');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9250188862');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6737516475');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0051346850');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5368956940');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2745486667');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9376521439');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1044131403');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7228432371');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9914215742');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0931466091');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0087408589');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2446549071');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6945867560');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3902686111');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5351701278');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3576855912');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1188034251');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4723296522');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0936153857');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0441874991');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9488380152');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2511668505');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5549133725');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6695733279');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5907813156');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4010172304');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2642256987');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4679772654');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6103761697');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8879781421');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4914927632');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7005757637');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1154882438');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1685492762');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2991671971');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0566063638');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7441946719');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9329058450');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1699866465');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8927614674');
+insert into horizontegt.documento_identificacion (pasaporte) values ('0180783335');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9554109512');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9749085892');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4032558876');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9635773749');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7509763053');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2475257407');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6364520847');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1105354636');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9551908228');
+insert into horizontegt.documento_identificacion (pasaporte) values ('4458435779');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9514106695');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5063736483');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5045329634');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6683070571');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2355983119');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2719233455');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5502725855');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3789496200');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6580422599');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3438217449');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7255350534');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5186184799');
+insert into horizontegt.documento_identificacion (pasaporte) values ('3326144318');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8322680457');
+insert into horizontegt.documento_identificacion (pasaporte) values ('9572784323');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2402623233');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6597671082');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1689933224');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7618649472');
+insert into horizontegt.documento_identificacion (pasaporte) values ('8860655811');
+insert into horizontegt.documento_identificacion (pasaporte) values ('1917281463');
+insert into horizontegt.documento_identificacion (pasaporte) values ('2386059006');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6219712498');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5843017664');
+insert into horizontegt.documento_identificacion (pasaporte) values ('7234871616');
+insert into horizontegt.documento_identificacion (pasaporte) values ('6560642135');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5810441610');
+insert into horizontegt.documento_identificacion (pasaporte) values ('5132194923');
+
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2062614284', 'Van', 'Kincade', '1973-03-31', 50, 'Female', '612-289-7553', '202-917-2066', 'vkincade0@usda.gov');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6797168856', 'Hartley', 'Grishkov', '2015-05-24', 6, 'Male', '732-854-5490', '579-878-5738', 'hgrishkov1@fotki.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2797961471', 'Yule', 'Begg', '1988-07-30', 33, 'Male', '202-710-6012', '895-834-9251', 'ybegg2@photobucket.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2400098816', 'Phillipe', 'Cotterill', '1986-06-29', 35, 'Male', '193-561-3992', '634-627-2999', 'pcotterill3@yandex.ru');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2844098088', 'Jarred', 'Scanlon', '1994-07-31', 27, 'Male', '925-276-1780', '177-499-5318', 'jscanlon4@nymag.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1219112097', 'Vivyan', 'Barrows', '2020-09-19', 1, 'Female', '890-452-7307', '984-846-5138', 'vbarrows5@sohu.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6775847696', 'Loydie', 'Coyne', '1976-01-06', 46, 'Male', '209-466-9595', '874-971-8824', 'lcoyne6@ovh.net');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3575874239', 'Caitlin', 'Strettell', '1990-08-11', 31, 'Female', '285-455-9658', '716-161-8207', 'cstrettell7@dropbox.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0420897194', 'Even', 'Pelham', '1993-01-07', 29, 'Male', '374-434-8935', '408-214-6958', 'epelham8@wisc.edu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8355741048', 'Lynnet', 'Treacy', '1998-08-31', 23, 'Female', '633-856-1738', '775-304-9239', 'ltreacy9@cyberchimps.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1932404651', 'Milka', 'Hinrichsen', '1971-07-19', 50, 'Female', '648-453-2148', '857-390-7467', 'mhinrichsena@sbwire.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2123166561', 'Kasper', 'Gillino', '1994-08-01', 27, 'Male', '590-973-8422', '905-747-3505', 'kgillinob@adobe.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4060254886', 'Ilyse', 'Kimmitt', '2004-06-25', 17, 'Female', '922-851-5106', '159-493-0481', 'ikimmittc@ebay.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0593629558', 'Shirley', 'Purkiss', '1971-01-29', 51, 'Female', '915-117-5881', '717-304-8620', 'spurkissd@answers.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3251041789', 'Derril', 'Foux', '2008-04-23', 14, 'Male', '326-656-6830', '354-334-9737', 'dfouxe@soundcloud.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8167213927', 'Gale', 'Crouse', '1974-09-27', 47, 'Female', '291-769-1213', '826-198-6008', 'gcrousef@cornell.edu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2627550470', 'Skell', 'Althrop', '1971-03-09', 51, 'Male', '430-324-0933', '472-322-9315', 'salthropg@ow.ly');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2562727894', 'Nappy', 'Kew', '1972-12-22', 49, 'Male', '819-961-9944', '578-616-9911', 'nkewh@issuu.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1651693390', 'Augustus', 'Franklin', '1990-11-06', 31, 'Male', '452-640-1514', '279-218-9216', 'afranklini@huffingtonpost.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5471426789', 'Lewes', 'Neissen', '2003-03-09', 19, 'Male', '966-480-4274', '738-720-6068', 'lneissenj@themeforest.net');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1058410172', 'Cyb', 'Kerwen', '1981-07-23', 40, 'Female', '121-723-6308', '432-312-0826', 'ckerwenk@1und1.de');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9250188862', 'Allx', 'Blockley', '1984-05-14', 38, 'Female', '734-835-5920', '820-335-6164', 'ablockleyl@google.es');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6737516475', 'Sholom', 'Rainsden', '1984-04-02', 38, 'Male', '664-978-8685', '412-338-8917', 'srainsdenm@g.co');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0051346850', 'Arie', 'Farndell', '1998-07-17', 23, 'Male', '888-548-9936', '228-776-4186', 'afarndelln@de.vu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5368956940', 'Amity', 'Bownd', '2011-03-14', 11, 'Female', '387-453-8385', '907-921-1338', 'abowndo@abc.net.au');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2745486667', 'Pamela', 'Clapp', '1971-09-08', 50, 'Female', '878-464-0991', '563-864-0598', 'pclappp@infoseek.co.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9376521439', 'Dorthy', 'Dobbs', '2018-11-05', 3, 'Female', '665-559-6320', '828-977-0536', 'ddobbsq@icio.us');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1044131403', 'Jamal', 'Salla', '2015-10-26', 6, 'Male', '309-463-1630', '472-228-5137', 'jsallar@blogs.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7228432371', 'Natividad', 'Guilloneau', '1971-10-15', 50, 'Female', '781-967-1637', '921-621-0990', 'nguilloneaus@ustream.tv');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9914215742', 'Wayne', 'Blaszkiewicz', '1972-03-10', 50, 'Male', '840-837-8618', '908-905-3822', 'wblaszkiewiczt@wunderground.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0931466091', 'Twila', 'Kingaby', '1971-01-02', 51, 'Male', '379-456-3194', '979-501-7490', 'tkingabyu@instagram.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0087408589', 'Phillis', 'Whelpdale', '2013-11-28', 8, 'Female', '982-295-6147', '322-344-5558', 'pwhelpdalev@t-online.de');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2446549071', 'Chery', 'Craiker', '2003-02-06', 19, 'Female', '410-613-3676', '924-788-3885', 'ccraikerw@yahoo.co.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6945867560', 'Brooke', 'Grayland', '2017-10-28', 4, 'Female', '147-517-4381', '660-121-9174', 'bgraylandx@stumbleupon.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3902686111', 'Christabella', 'Bleythin', '1989-05-09', 33, 'Female', '422-767-0810', '216-667-1455', 'cbleythiny@cnet.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5351701278', 'Sanson', 'Stebbings', '2010-03-31', 12, 'Male', '660-353-1772', '939-536-9562', 'sstebbingsz@imageshack.us');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3576855912', 'Wenona', 'Varga', '2008-08-20', 13, 'Female', '186-686-1449', '213-709-6701', 'wvarga10@abc.net.au');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1188034251', 'Abby', 'Stellin', '1992-12-14', 29, 'Female', '472-486-5468', '725-817-5035', 'astellin11@narod.ru');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4723296522', 'Romola', 'Gregoratti', '1977-12-30', 44, 'Female', '460-123-3726', '314-282-6417', 'rgregoratti12@pbs.org');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0936153857', 'Sabrina', 'Gahan', '2014-07-09', 7, 'Female', '130-218-8436', '939-711-4089', 'sgahan13@google.com.br');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0441874991', 'Gordan', 'Casa', '2007-12-19', 14, 'Male', '476-252-5581', '506-478-0813', 'gcasa14@mayoclinic.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9488380152', 'Lianne', 'Sharman', '2004-12-11', 17, 'Female', '612-805-4051', '566-717-6665', 'lsharman15@howstuffworks.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2511668505', 'Hughie', 'Nelm', '2006-10-24', 15, 'Male', '995-109-3585', '530-255-5064', 'hnelm16@amazonaws.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5549133725', 'Jaclin', 'Daniaud', '2004-03-11', 18, 'Female', '565-630-6753', '449-888-0970', 'jdaniaud17@jugem.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6695733279', 'Anestassia', 'Stearns', '1998-02-04', 24, 'Female', '357-688-7183', '256-398-3454', 'astearns18@upenn.edu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5907813156', 'Roana', 'Abramamovh', '1991-10-07', 30, 'Female', '249-656-1783', '980-460-4080', 'rabramamovh19@behance.net');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4010172304', 'Remington', 'Rawsthorne', '1985-10-20', 36, 'Male', '775-127-0927', '699-430-4453', 'rrawsthorne1a@hud.gov');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2642256987', 'Dedie', 'Deverille', '1978-01-25', 44, 'Female', '495-574-0338', '390-536-4373', 'ddeverille1b@histats.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4679772654', 'Gabriele', 'Tuvey', '1988-06-18', 33, 'Female', '873-862-8666', '162-888-6236', 'gtuvey1c@dyndns.org');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6103761697', 'Kameko', 'Biskup', '1974-08-17', 47, 'Male', '522-125-6631', '496-540-3239', 'kbiskup1d@blogspot.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8879781421', 'Igor', 'McKee', '1996-04-23', 26, 'Male', '211-436-7813', '911-194-0379', 'imckee1e@apple.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4914927632', 'Jerrold', 'Gunney', '2001-10-04', 20, 'Male', '519-518-8886', '174-391-6934', 'jgunney1f@canalblog.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7005757637', 'Brigg', 'Leet', '1998-07-27', 23, 'Male', '776-710-2217', '616-172-8043', 'bleet1g@globo.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1154882438', 'Keelby', 'Thurbon', '1974-06-04', 47, 'Male', '282-563-6770', '610-469-9056', 'kthurbon1h@geocities.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1685492762', 'Clayson', 'Dyster', '1979-07-26', 42, 'Male', '429-383-4004', '948-505-8488', 'cdyster1i@tiny.cc');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2991671971', 'Dagmar', 'Looks', '2018-05-28', 9, 'Female', '865-274-2993', '878-505-5814', 'dlooks1j@wp.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0566063638', 'Hunfredo', 'Perot', '1985-01-25', 37, 'Male', '211-314-3799', '283-378-0971', 'hperot1k@soup.io');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7441946719', 'Koressa', 'St Louis', '2005-04-19', 17, 'Female', '436-132-1291', '108-904-7609', 'kstlouis1l@illinois.edu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9329058450', 'Zoe', 'Mewrcik', '2003-11-23', 18, 'Female', '773-783-2230', '900-492-4148', 'zmewrcik1m@businessweek.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1699866465', 'Chloe', 'Conyer', '1972-07-28', 49, 'Female', '105-306-0866', '306-529-6552', 'cconyer1n@canalblog.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8927614674', 'Roger', 'Prozillo', '1980-11-25', 41, 'Male', '986-516-2778', '761-811-6473', 'rprozillo1o@phoca.cz');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('0180783335', 'Celisse', 'Leibold', '1974-07-14', 47, 'Female', '941-261-7282', '782-552-9074', 'cleibold1p@goo.ne.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9554109512', 'Stephine', 'Beacham', '2000-05-03', 22, 'Female', '860-290-7613', '745-516-2416', 'sbeacham1q@php.net');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9749085892', 'Sophie', 'Saurin', '2014-02-17', 8, 'Female', '152-476-0529', '992-925-3766', 'ssaurin1r@blogs.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4032558876', 'Tannie', 'Figgs', '1975-07-22', 46, 'Male', '117-641-3210', '803-960-6107', 'tfiggs1s@intel.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9635773749', 'Carter', 'Ashplant', '1992-10-06', 29, 'Male', '956-815-4792', '714-912-9199', 'cashplant1t@wix.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7509763053', 'Osgood', 'Perigeaux', '1994-05-20', 27, 'Male', '615-980-3861', '504-512-5264', 'operigeaux1u@typepad.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2475257407', 'Nevil', 'Syrett', '2010-06-18', 11, 'Male', '603-417-8851', '226-939-8564', 'nsyrett1v@apache.org');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6364520847', 'Yasmin', 'Crambie', '2009-09-08', 12, 'Female', '823-401-0595', '589-461-6869', 'ycrambie1w@hostgator.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1105354636', 'Moshe', 'Hoppner', '1998-10-12', 23, 'Male', '984-921-8603', '671-390-6561', 'mhoppner1x@rakuten.co.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9551908228', 'Anette', 'Lafford', '2012-02-29', 10, 'Female', '859-961-3480', '954-889-7505', 'alafford1y@bloglines.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('4458435779', 'Dom', 'Barkus', '1990-09-10', 31, 'Male', '382-669-7373', '526-329-6988', 'dbarkus1z@phoca.cz');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9514106695', 'Solomon', 'Milthorpe', '2011-03-08', 11, 'Male', '831-913-4449', '866-202-5036', 'smilthorpe20@va.gov');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5063736483', 'Truda', 'Lockner', '1985-05-04', 37, 'Female', '963-766-9717', '426-512-1075', 'tlockner21@prnewswire.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5045329634', 'Scotti', 'Burfoot', '2006-04-20', 16, 'Male', '633-601-4491', '789-830-6738', 'sburfoot22@github.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6683070571', 'Cathyleen', 'Bursnell', '2011-12-22', 10, 'Female', '164-941-8142', '573-730-5261', 'cbursnell23@delicious.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2355983119', 'Claire', 'Wileman', '2003-02-20', 19, 'Male', '959-887-3046', '968-919-3791', 'cwileman24@ameblo.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2719233455', 'Stormie', 'Hobbing', '1972-09-28', 49, 'Female', '381-135-4088', '523-948-9681', 'shobbing25@prnewswire.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5502725855', 'Gianna', 'Wadforth', '1980-06-16', 41, 'Female', '930-971-1111', '775-696-7559', 'gwadforth26@omniture.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3789496200', 'Devlen', 'Vauter', '1973-04-13', 49, 'Male', '383-924-3001', '325-410-7765', 'dvauter27@businessweek.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6580422599', 'Alfredo', 'Sabin', '2007-07-29', 14, 'Male', '492-496-3395', '375-890-8518', 'asabin28@domainmarket.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3438217449', 'Kittie', 'Snead', '1991-12-09', 30, 'Female', '812-440-4970', '341-647-1194', 'ksnead29@amazon.de');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7255350534', 'Janna', 'Cowdray', '1994-11-08', 27, 'Female', '393-602-2686', '579-102-9549', 'jcowdray2a@wordpress.org');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5186184799', 'Ambrosius', 'Giles', '1978-12-13', 43, 'Male', '535-215-4547', '622-499-2689', 'agiles2b@flickr.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('3326144318', 'Gaby', 'Antrobus', '1980-05-19', 41, 'Male', '143-697-9860', '443-724-7234', 'gantrobus2c@huffingtonpost.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8322680457', 'Bruis', 'Lober', '2008-06-25', 13, 'Male', '797-184-4319', '595-563-9951', 'blober2d@wisc.edu');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('9572784323', 'Jock', 'Boich', '2007-12-12', 14, 'Male', '740-198-8241', '724-722-7670', 'jboich2e@yellowbook.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2402623233', 'Berny', 'Behning', '2007-11-03', 14, 'Female', '382-797-8724', '174-271-8791', 'bbehning2f@forbes.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6597671082', 'Phip', 'Tams', '1991-11-19', 30, 'Male', '625-595-4909', '269-633-6053', 'ptams2g@newyorker.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1689933224', 'Basia', 'McAllaster', '2012-11-23', 9, 'Female', '640-191-5012', '721-533-8114', 'bmcallaster2h@wufoo.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7618649472', 'Gabriello', 'Blackmore', '1973-02-11', 49, 'Male', '314-973-1007', '229-740-4133', 'gblackmore2i@scribd.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('8860655811', 'Melodie', 'Oulett', '1971-11-09', 50, 'Female', '464-591-2764', '829-449-3447', 'moulett2j@msn.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('1917281463', 'Geri', 'Dolohunty', '1984-09-08', 37, 'Male', '955-746-8371', '876-592-1719', 'gdolohunty2k@imdb.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('2386059006', 'Kay', 'Dishman', '2008-04-24', 14, 'Female', '110-646-2183', '783-356-8322', 'kdishman2l@bluehost.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6219712498', 'Cleon', 'Dashwood', '2012-10-29', 9, 'Male', '836-854-4532', '341-777-7083', 'cdashwood2m@fotki.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5843017664', 'Alejandra', 'Baitson', '1988-09-02', 33, 'Female', '606-374-5714', '418-446-1960', 'abaitson2n@techcrunch.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('7234871616', 'Consolata', 'Gaylard', '2016-07-23', 5, 'Female', '995-591-1649', '865-144-0277', 'cgaylard2o@taobao.com');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('6560642135', 'Emmaline', 'Crevy', '1999-08-20', 22, 'Female', '986-757-1679', '130-928-4438', 'ecrevy2p@t.co');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5810441610', 'Melody', 'McGaffey', '2014-06-09', 7, 'Female', '971-711-9280', '680-948-0493', 'mmcgaffey2q@jugem.jp');
+insert into horizontegt.persona (pasaporte, nombres, apellidos, fecha_nacimiento, edad, genero, telefono, telefono_2, email) values ('5132194923', 'Caitlin', 'Chimenti', '2005-01-10', 17, 'Female', '729-982-2368', '356-920-0158', 'cchimenti2r@eepurl.com');
+
+insert into horizontegt.tipo_empleado (tipo_empleado) values ('Personal a Bordo');
+insert into horizontegt.tipo_empleado (tipo_empleado) values ('Personal en Tierra');
+
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('2797961471', 'Piloto', 20000, 'Personal a Bordo', 5, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('2400098816', 'Piloto', 20000, 'Personal a Bordo', 7, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('1058410172', 'Azafata', 10000, 'Personal a Bordo', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('9250188862', 'Azafata', 10000, 'Personal a Bordo', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('6737516475', 'Ingeniero de Vuelo', 15000, 'Personal a Bordo', 0, '08:00', '18:00',5, 10, '2015-01-01');
+
+
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('1154882438', 'Piloto', 20000, 'Personal a Bordo', 20, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('1685492762', 'Piloto', 20000, 'Personal a Bordo', 15, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('6695733279', 'Azafata', 10000, 'Personal a Bordo', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('5907813156', 'Azafata', 10000, 'Personal a Bordo', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('4010172304', 'Ingeniero de Vuelo', 15000, 'Personal a Bordo', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+
+
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('9914215742', 'Piloto', 20000, 'Personal a Bordo', 25, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('0931466091', 'Piloto', 20000, 'Personal a Bordo', 25, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('8355741048', 'Azafata', 10000, 'Personal a Bordo', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('7255350534', 'Azafata', 10000, 'Personal a Bordo', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('2844098088', 'Ingeniero de Vuelo', 15000, 'Personal a Bordo', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+
+
+---------PUNTO DE CONTROL
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('6775847696', 'Director General', 40000, 'Personal en Tierra', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('2642256987', 'Punto de Control', 20000, 'Personal en Tierra', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('4679772654', 'Punto de Control', 20000, 'Personal en Tierra', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('6103761697', 'Punto de Control', 20000, 'Personal en Tierra', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('3575874239', 'Secretaria', 18000, 'Personal en Tierra', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('8879781421', 'Mecanico', 15000, 'Personal en Tierra', 0, '08:00', '18:00', 5, 10, '2015-01-01');
+insert into horizontegt.personal_aeropuerto(pasaporte, puesto, sueldo_base, tipo_empleado, anios_experiencia, horario_entrada, horario_salida, dias_enfermedad, dias_vacaciones, fecha_inicio) values ('0420897194', 'Mecanico', 15000, 'Personal en Tierra', 0, '14:00', '22:00', 5, 10, '2015-01-01');
+
+insert into horizontegt.aeropuerto (id_aeropuerto, nombre, direccion, ciudad, pais, continente) values (1, 'Aeropuerto1', '71732 International Plaza', 'Acapulco', 'Mexico', 'Norte America');
+insert into horizontegt.aeropuerto (id_aeropuerto, nombre, direccion, ciudad, pais, continente) values (2, 'Aeropuerto2', '9675 Roxbury Hill', 'Hongqi', 'China', 'Asia');
+insert into horizontegt.aeropuerto (id_aeropuerto, nombre, direccion, ciudad, pais, continente) values (3, 'Aeropuerto3', '41070 7th Circle', 'Miami', 'USA', 'Norte America');
+insert into horizontegt.aeropuerto (id_aeropuerto, nombre, direccion, ciudad, pais, continente) values (4, 'Aeropuerto4', '07149 Surrey Avenue', 'Los Angeles', 'USA', 'Norte America');
+insert into horizontegt.aeropuerto (id_aeropuerto, nombre, direccion, ciudad, pais, continente) values (5, 'Aeropuerto5', '502 Golf Alley', 'New York', 'USA', 'Norte America');
+
+insert into horizontegt.dias_plan_vuelo (id_dias_plan_vuelo, dias_plan) values (1, '{"Lunes", "Miercoles", "Viernes"}');
+
+INSERT INTO horizontegt.tipo_avion(tipo_avion, capacidad) 
+VALUES('Airbus A318', 15)
+,('Airbus A320', 20)
+,('Dassault Falcon 100', 9);
+
+INSERT INTO horizontegt.estado_avion(estado) VALUES ('Disponible'),
+('Reparacion'), ('Mantenimiento');
+
+INSERT INTO horizontegt.avion(codigo_avion,modelo,tipo_avion_tipo_avion,fecha_adquisicion, fecha_mantenimiento, estado_avion_estado)
+VALUES ('F1', 'Airbus A318', 'Airbus A318', '01-01-2020','01-02-2021','Disponible'),
+('F2', 'Airbus A318', 'Airbus A318', '01-01-2020','01-02-2021','Disponible'),
+('F3', 'Airbus A318', 'Airbus A318', '01-01-2020','01-02-2021','Mantenimiento'),
+('F4', 'Airbus A320', 'Airbus A320', '01-01-2020','01-02-2021','Disponible'),
+('F5', 'Airbus A320', 'Airbus A320', '01-01-2020','01-02-2021','Disponible'),
+('F6', 'Airbus A320', 'Airbus A320', '01-01-2020','01-02-2021','Mantenimiento'),
+('F7', 'Dassault Falcon 100', 'Dassault Falcon 100', '01-01-2020','01-02-2021','Disponible'),
+('F8', 'Dassault Falcon 100', 'Dassault Falcon 100', '01-01-2020','01-02-2021','Disponible'),
+('F9', 'Dassault Falcon 100', 'Dassault Falcon 100', '01-01-2020','01-02-2021','Mantenimiento');
+
+
+INSERT INTO horizontegt.plan_vuelo(id_plan_vuelo, dias_plan_vuelo_id_dias_plan_vuelo,distancia, tipo_avion_tipo_avion, es_temporal, estado)
+VALUES(1,1,200,'Airbus A318', 'False','Disponible'),
+(2,1,250,'Airbus A320', 'False','Disponible'),
+(3,1,100,'Dassault Falcon 100', 'False','Disponible'),
+(4,1,400,'Airbus A320', 'False','Disponible'),
+(5,1,150,'Airbus A318', 'False','Disponible');
+
+INSERT INTO horizontegt.vuelo(id_vuelo, fecha, distancia, plan_vuelo_id_plan_vuelo, avion_codigo_avion, puerta_abordaje, puerta_desembarque, hora_despegue,hora_aterrizaje)
+VALUES (1, '2022-01-15',200,1,'F1','5','15','18:00','10:00'),
+(2, '2022-02-15',200,1,'F1','5','15','18:00','10:00'),
+(3, '2022-03-15',200,1,'F2','5','15','18:00','10:00'),
+(4, '2022-01-20',250,2,'F4','6','16','23:00','14:00'),
+(5, '2022-04-20',250,2,'F5','6','16','23:00','14:00'),
+(6, '2022-05-1',100, 3,'F7','1','10','08:00','18:00'),
+(7, '2022-05-10',100, 3,'F7','1','10','08:00','18:00');
+
+
+
+--------------------ESTADO DEL VUELO No. 1
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES(1, 'Despegue', '2022-01-14', '18:00',1),
+(2, 'Volando', '2022-01-14', '20:00',1),
+(3, 'Aterrizaje', '2022-01-15', '10:00',1),
+(4, 'Completado', '2022-01-15', '12:00',1);
+
+--------------------ESTADO DEL VUELO No. 2
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES(5, 'Despegue', '2022-02-14', '18:00',2),
+(6, 'Volando', '2022-02-14', '20:00',2),
+(7, 'Aterrizaje', '2022-02-15', '10:00',2),
+(8, 'Completado', '2022-02-15', '12:00',2);
+
+--------------------ESTADO DEL VUELO No. 3
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES(9, 'Despegue', '2022-03-14', '18:00',3),
+(10, 'Volando', '2022-03-14', '20:00',3),
+(11, 'Aterrizaje', '2022-03-15', '10:00',3),
+(12, 'Completado', '2022-03-15', '12:00',3);
+
+--------------------ESTADO DEL VUELO No. 4
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES (13, 'Retraso', '2022-01-19', '23:00',4),
+(14, 'Despegue', '2022-01-20', '03:00',4),
+(15, 'Volando', '2022-01-20', '05:00',4),
+(16, 'Aterrizaje', '2022-01-20', '18:00',4),
+(17, 'Completado', '2022-01-20', '20:00',4);
+
+--------------------ESTADO DEL VUELO No. 5
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES (18, 'Retraso', '2022-04-19', '23:00',5),
+(19, 'Despegue', '2022-04-20', '03:00',5),
+(20, 'Volando', '2022-04-20', '05:00',5),
+(21, 'Aterrizaje', '2022-04-20', '18:00',5),
+(22, 'Completado', '2022-04-20', '20:00',5);
+
+--------------------ESTADO DEL VUELO No. 6
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES(23, 'Despegue', '2022-05-01', '08:00',6),
+(24, 'Volando', '2022-05-01', '10:00',6),
+(25, 'Aterrizaje', '2022-05-01', '18:00',6),
+(26, 'Completado', '2022-05-01', '20:00',6);
+
+--------------------ESTADO DEL VUELO No. 7
+INSERT INTO horizontegt.estado_vuelo(id_estado_vuelo, estado_vuelo, fecha, hora, vuelo_id_vuelo)
+VALUES(27, 'Retraso', '2022-05-10', '08:00',7),
+(28, 'Cancelado', '2022-05-10', '12:00',7);
+
+-----------VUELO 1
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('9914215742',1, 'Piloto', 200, 18,'2022-01-15'),
+  ('0931466091',1, 'Co-Piloto', 200, 18, '2022-01-15'),
+  ('8355741048',1, 'Azafata', 200, 18,  '2022-01-15'),
+  ('7255350534',1, 'Azafata', 200, 18,  '2022-01-15'),
+  ('2844098088',1, 'Ingeniero de Vuelo', 200, 18, '2022-01-15');
+
+-----------VUELO 2
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('9914215742',2, 'Piloto', 200, 18,'2022-02-15'),
+  ('0931466091',2, 'Co-Piloto', 200, 18, '2022-02-15'),
+  ('8355741048',2, 'Azafata', 200, 18,  '2022-02-15'),
+  ('7255350534',2, 'Azafata', 200, 18,  '2022-02-15'),
+  ('2844098088',2, 'Ingeniero de Vuelo', 200, 18, '2022-02-15');
+
+-----------VUELO 3
+  insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('9914215742',3, 'Piloto', 200, 18,'2022-03-15'),
+  ('0931466091',3, 'Co-Piloto', 200, 18, '2022-03-15'),
+  ('8355741048',3, 'Azafata', 200, 18,  '2022-03-15'),
+  ('7255350534',3, 'Azafata', 200, 18,  '2022-03-15'),
+  ('2844098088',3, 'Ingeniero de Vuelo', 200, 18, '2022-03-15');
+
+-----------VUELO 4
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('1154882438', 4, 'Piloto', 250, 21, '2022-01-20'),
+  ('1685492762', 4, 'Co-Piloto', 250, 21, '2022-01-20'),
+  ('6695733279', 4, 'Azafata', 250, 21, '2022-01-20'),
+  ('5907813156', 4, 'Azafata', 250, 21, '2022-01-20'),
+  ('4010172304', 4, 'Ingeniero de Vuelo', 250, 21, '2022-01-20');
+
+----------- VUELO 5
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('1154882438', 5, 'Piloto', 250, 21, '2022-04-20'),
+  ('1685492762', 5, 'Co-Piloto', 250, 21, '2022-04-20'),
+  ('6695733279', 5, 'Azafata', 250, 21, '2022-04-20'),
+  ('5907813156', 5, 'Azafata', 250, 21, '2022-04-20'),
+  ('4010172304', 5, 'Ingeniero de Vuelo', 250, 21, '2022-04-20');
+
+--------VUELO 6
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('2797961471',6, 'Piloto', 100, 12,'2022-05-01'),
+  ('2400098816',6, 'Co-Piloto', 100, 12,'2022-05-01'),
+  ('1058410172',6, 'Azafata', 100, 12, '2022-05-01'),
+  ('9250188862',6, 'Azafata', 100, 12, '2022-05-01'),
+  ('6737516475',6, 'Ingeniero de Vuelo', 100, 12, '2022-05-01');
+
+  --------VUELO 7
+insert into horizontegt.asignacion_tripulacion(personal_aeropuerto_pasaporte,vuelo_id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('2797961471',7, 'Piloto', 100, 4,'2022-05-10'),
+  ('2400098816',7, 'Co-Piloto', 100, 4,'2022-05-10'),
+  ('1058410172',7, 'Azafata', 100, 4, '2022-05-10'),
+  ('9250188862',7, 'Azafata', 100, 4, '2022-05-10'),
+  ('6737516475',7, 'Ingeniero de Vuelo', 100, 4, '2022-05-10');
+
+
+  ----------COMISION VUELO 1
+insert into horizontegt.comisiones(pasaporte,id_vuelo, fecha, comision, comision_anios, subtotal) values 
+  ('9914215742',1, '2022-01-15', 3600, 2500, 6100),
+  ('0931466091',1, '2022-01-15', 3600, 2500, 6100),
+  ('8355741048',1, '2022-01-15', 3600, 0, 3600),
+  ('7255350534',1, '2022-01-15', 3600, 0, 3600),
+  ('2844098088',1, '2022-01-15', 3600, 0, 3600);
+
+
+
+----------COMISION VUELO 4
+insert into horizontegt.comisiones(pasaporte,id_vuelo, fecha, comision, comision_anios, subtotal) values 
+  ('1154882438', 4, '2022-01-20', 5250, 2000, 7250),
+  ('1685492762', 4, '2022-01-20', 5250, 1500, 5750),
+  ('6695733279', 4, '2022-01-20', 5250, 0, 5250),
+  ('5907813156', 4, '2022-01-20',5250, 0, 5250),
+  ('4010172304', 4, '2022-01-20', 5250, 0, 5250);
+
+
+----------COMISION VUELO 2
+insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('9914215742',2, 'Piloto', 200, 18,'2022-02-15'),
+  ('0931466091',2, 'Co-Piloto', 200, 18, '2022-02-15'),
+  ('8355741048',2, 'Azafata', 200, 18,  '2022-02-15'),
+  ('7255350534',2, 'Azafata', 200, 18,  '2022-02-15'),
+  ('2844098088',2, 'Ingeniero de Vuelo', 200, 18, '2022-02-15');
+
+----------COMISION VUELO 3
+  insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('9914215742',3, 'Piloto', 200, 18,'2022-03-15'),
+  ('0931466091',3, 'Co-Piloto', 200, 18, '2022-03-15'),
+  ('8355741048',3, 'Azafata', 200, 18,  '2022-03-15'),
+  ('7255350534',3, 'Azafata', 200, 18,  '2022-03-15'),
+  ('2844098088',3, 'Ingeniero de Vuelo', 200, 18, '2022-03-15');
+
+----------COMISION VUELO 4
+insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('1154882438', 4, 'Piloto', 250, 21, '2022-01-20'),
+  ('1685492762', 4, 'Co-Piloto', 250, 21, '2022-01-20'),
+  ('6695733279', 4, 'Azafata', 250, 21, '2022-01-20'),
+  ('5907813156', 4, 'Azafata', 250, 21, '2022-01-20'),
+  ('4010172304', 4, 'Ingeniero de Vuelo', 250, 21, '2022-01-20');
+
+----------- VUELO 5
+insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('1154882438', 5, 'Piloto', 250, 21, '2022-04-20'),
+  ('1685492762', 5, 'Co-Piloto', 250, 21, '2022-04-20'),
+  ('6695733279', 5, 'Azafata', 250, 21, '2022-04-20'),
+  ('5907813156', 5, 'Azafata', 250, 21, '2022-04-20'),
+  ('4010172304', 5, 'Ingeniero de Vuelo', 250, 21, '2022-04-20');
+
+-------COMISION VUELO 6
+insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('2797961471',6, 'Piloto', 100, 12,'2022-05-01'),
+  ('2400098816',6, 'Co-Piloto', 100, 12,'2022-05-01'),
+  ('1058410172',6, 'Azafata', 100, 12, '2022-05-01'),
+  ('9250188862',6, 'Azafata', 100, 12, '2022-05-01'),
+  ('6737516475',6, 'Ingeniero de Vuelo', 100, 12, '2022-05-01');
+
+  -------COMISION VUELO 7
+insert into horizontegt.comisiones(pasaporte,id_vuelo, rol, distancia, cantidad_horas, fecha) values 
+  ('2797961471',7, 'Piloto', 100, 4,'2022-05-10'),
+  ('2400098816',7, 'Co-Piloto', 100, 4,'2022-05-10'),
+  ('1058410172',7, 'Azafata', 100, 4, '2022-05-10'),
+  ('9250188862',7, 'Azafata', 100, 4, '2022-05-10'),
+  ('6737516475',7, 'Ingeniero de Vuelo', 100, 4, '2022-05-10');
+
+
+  
+
+----------NOMINA DEL MES DE ENERO DE 2022
+
+-----TRIPULACION 1
+insert into horizontegt.nomina_sueldos_empleados(personal_aeropuerto_pasaporte, sueldo_base,comisiones, total, fecha_pago) 
+values ('9914215742', 20000,6100, 26100, '2022-01-31'),
+  ('0931466091',  20000,6100, 26100, '2022-01-31'),
+  ('8355741048',  10000,3600, 13600, '2022-01-31'),
+  ('7255350534',  10000,3600, 13600,'2022-01-31'),
+  ('2844098088', 15000,3600,18600, '2022-01-31');
+
+-----TRIPULACION 2
+insert into horizontegt.nomina_sueldos_empleados(personal_aeropuerto_pasaporte, sueldo_base,comisiones, total, fecha_pago) 
+values
+  ('1154882438', 20000, 7250, 27250,  '2022-01-31'),
+  ('1685492762', 20000,  5750, 25750, '2022-01-31'),
+  ('6695733279',  10000, 5250, 15250, '2022-01-31'),
+  ('5907813156',  10000, 5250, 15250, '2022-01-31'),
+  ('4010172304', 15000, 5250,20250, '2022-01-31');
+
+------TRIPULACION 3
+insert into horizontegt.nomina_sueldos_empleados(personal_aeropuerto_pasaporte, sueldo_base,comisiones, total, fecha_pago) 
+values
+  ('2797961471', 20000,0,20000,  '2022-01-31'),
+  ('2400098816', 20000,0,20000,'2022-01-31'),
+  ('1058410172',  10000,0,10000,'2022-01-31'),
+  ('9250188862',  10000,0,10000,'2022-01-31'),
+  ('6737516475', 15000,0,15000, '2022-01-31');
+
+
+
+---------PUNTO DE CONTROL
+insert into horizontegt.nomina_sueldos_empleados(personal_aeropuerto_pasaporte, sueldo_base,comisiones, total, fecha_pago) 
+values
+  ('6775847696', 40000, 0, 40000,  '2022-01-31'),
+  ('2642256987', 20000, 0, 20000,  '2022-01-31'),
+  ('4679772654', 20000, 0, 20000, '2022-01-31'),
+  ('6103761697', 20000, 0, 20000, '2022-01-31'),
+  ('3575874239',  18000,0,18000,  '2022-01-31'),
+  ('8879781421',  15000,0,15000,  '2022-01-31'),
+  ('0420897194',  15000,0,15000, '2022-01-31');
+
+INSERT INTO horizontegt.clase(nombre_clase, ubicacion) VALUES
+('Primera','Primeras filas'),
+('Business','Filas despues de PC'),
+('Economy','Ultimas filas'),
+('Basica','Ultimas filas');
